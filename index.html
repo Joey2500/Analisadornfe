@@ -48,109 +48,80 @@
 </head>
 <body>
 
-    <div id="app-container" style="display:none;">
-
-        <div class="header-container">
-            <h1>Leitor de NF-e</h1>
-            <div>
-                <button id="screenshot-btn" class="btn">📸 Capturar Tela</button>
-                <button id="theme-toggle" class="btn">Mudar Tema</button>
-            </div>
+    <div class="header-container">
+        <h1>Leitor de NF-e</h1>
+        <div>
+            <button id="screenshot-btn" class="btn">📸 Capturar Tela</button>
+            <button id="theme-toggle" class="btn">Mudar Tema</button>
         </div>
+    </div>
 
-        <div class="tab-nav">
-            <button class="btn active" data-tab="tab-analise">Análise NF-e</button>
-            <button class="btn" data-tab="tab-historico">Histórico</button>
+    <div class="tab-nav">
+        <button class="btn active" data-tab="tab-analise">Análise NF-e</button>
+        <button class="btn" data-tab="tab-historico">Histórico</button>
+    </div>
+
+    <div id="tab-analise" class="tab-content active">
+        <div class="input-group">
+            <label for="zip-file" class="btn">📂 Selecionar ZIP</label>
+            <input type="file" id="zip-file" accept=".zip" />
+            <label for="month-input">Mês de Referência:</label>
+            <input type="month" id="month-input">
+            <button id="save-history-btn" class="btn" disabled>Salvar no Histórico</button>
         </div>
+        <div id="messages">Aguardando arquivo...</div>
+        <h2>✅ Mercadoria</h2>
+        <table id="tbl-merch">
+            <thead><tr><th>Documento</th><th>Chave NF-e</th><th>CFOP</th><th class="valor">Valor (R$)</th></tr></thead>
+            <tbody></tbody>
+            <tfoot><tr><th colspan="3">TOTAL MERCADORIA</th><th class="valor" id="total-merch">R$ 0,00</th></tr></tfoot>
+        </table>
+        <h2>🛠️ Mão de Obra</h2>
+        <table id="tbl-lab">
+            <thead><tr><th>Documento</th><th>Chave NF-e</th><th>CFOP</th><th class="valor">Valor (R$)</th></tr></thead>
+            <tbody></tbody>
+            <tfoot><tr><th colspan="3">TOTAL MÃO DE OBRA</th><th class="valor" id="total-lab">R$ 0,00</th></tr></tfoot>
+        </table>
+        <h2>📊 Distribuição por CFOP</h2>
+        <div class="chart-container"><canvas id="cfopChart"></canvas></div>
+    </div>
 
-        <div id="tab-analise" class="tab-content active">
-            <div class="input-group">
-                <label for="zip-file" class="btn">📂 Selecionar ZIP</label>
-                <input type="file" id="zip-file" accept=".zip" />
-                <label for="month-input">Mês de Referência:</label>
-                <input type="month" id="month-input">
-                <button id="save-history-btn" class="btn" disabled>Salvar no Histórico</button>
-            </div>
-            <div id="messages">Aguardando arquivo...</div>
-            <h2>✅ Mercadoria</h2>
-            <table id="tbl-merch">
-                <thead><tr><th>Documento</th><th>Chave NF-e</th><th>CFOP</th><th class="valor">Valor (R$)</th></tr></thead>
-                <tbody></tbody>
-                <tfoot><tr><th colspan="3">TOTAL MERCADORIA</th><th class="valor" id="total-merch">R$ 0,00</th></tr></tfoot>
-            </table>
-            <h2>🛠️ Mão de Obra</h2>
-            <table id="tbl-lab">
-                <thead><tr><th>Documento</th><th>Chave NF-e</th><th>CFOP</th><th class="valor">Valor (R$)</th></tr></thead>
-                <tbody></tbody>
-                <tfoot><tr><th colspan="3">TOTAL MÃO DE OBRA</th><th class="valor" id="total-lab">R$ 0,00</th></tr></tfoot>
-            </table>
-            <h2>📊 Distribuição por CFOP</h2>
-            <div class="chart-container"><canvas id="cfopChart"></canvas></div>
+    <div id="tab-historico" class="tab-content">
+        <h2>🗓️ Histórico Mensal</h2>
+        <table id="history-table">
+            <thead>
+                <tr>
+                    <th>Mês/Ano</th>
+                    <th class="valor">Total Mercadoria (R$)</th>
+                    <th class="percent">Var. Merc. (%)</th>
+                    <th class="valor">Total Mão de Obra (R$)</th>
+                    <th class="percent">Var. M. Obra (%)</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                <tr>
+                    <th>TOTAL CONSOLIDADO</th>
+                    <th class="valor" id="history-total-merch">R$ 0,00</th>
+                    <th class="percent">—</th>
+                    <th class="valor" id="history-total-lab">R$ 0,00</th>
+                    <th class="percent">—</th>
+                </tr>
+            </tfoot>
+        </table>
+        <h2>📈 Evolução da Mercadoria</h2>
+        <div class="chart-container"><canvas id="history-chart-merch"></canvas></div>
+        <h2>🛠️ Evolução da Mão de Obra</h2>
+        <div class="chart-container"><canvas id="history-chart-lab"></canvas></div>
+        <div class="history-actions">
+            <button id="export-history-btn" class="btn">Exportar Histórico</button>
+            <label for="import-history-input" class="btn">Importar Histórico</label>
+            <input type="file" id="import-history-input" accept=".json">
+            <button id="clear-history-btn" class="btn btn-danger">Limpar Histórico</button>
         </div>
-
-        <div id="tab-historico" class="tab-content">
-            <h2>🗓️ Histórico Mensal</h2>
-            <table id="history-table">
-                <thead>
-                    <tr>
-                        <th>Mês/Ano</th>
-                        <th class="valor">Total Mercadoria (R$)</th>
-                        <th class="percent">Var. Merc. (%)</th>
-                        <th class="valor">Total Mão de Obra (R$)</th>
-                        <th class="percent">Var. M. Obra (%)</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-                <tfoot>
-                    <tr>
-                        <th>TOTAL CONSOLIDADO</th>
-                        <th class="valor" id="history-total-merch">R$ 0,00</th>
-                        <th class="percent">—</th>
-                        <th class="valor" id="history-total-lab">R$ 0,00</th>
-                        <th class="percent">—</th>
-                    </tr>
-                </tfoot>
-            </table>
-            <h2>📈 Evolução da Mercadoria</h2>
-            <div class="chart-container"><canvas id="history-chart-merch"></canvas></div>
-            <h2>🛠️ Evolução da Mão de Obra</h2>
-            <div class="chart-container"><canvas id="history-chart-lab"></canvas></div>
-            <div class="history-actions">
-                <button id="export-history-btn" class="btn">Exportar Histórico</button>
-                <label for="import-history-input" class="btn">Importar Histórico</label>
-                <input type="file" id="import-history-input" accept=".json">
-                <button id="clear-history-btn" class="btn btn-danger">Limpar Histórico</button>
-            </div>
-        </div>
-
     </div>
 
     <script>
-        // --- 0. CÓDIGO DE AUTENTICAÇÃO ---
-        function checkPassword() {
-            // ######################################################
-            // ##                                                  ##
-            // ##    ALTERE A SUA SENHA SECRETA NA LINHA ABAIXO    ##
-            // ##                                                  ##
-            // ######################################################
-            const correctPassword = "87840272Bjj";
-
-            const enteredPassword = prompt("Por favor, digite a senha para acessar a ferramenta:");
-
-            if (enteredPassword === correctPassword) {
-                // Se a senha estiver correta, mostra o conteúdo da aplicação
-                document.getElementById("app-container").style.display = "block";
-            } else {
-                // Se a senha estiver errada, exibe um alerta e uma mensagem de erro na página
-                alert("Senha incorreta. O acesso foi negado.");
-                const h1 = document.createElement('h1');
-                h1.textContent = 'ACESSO NEGADO';
-                // Aplica estilos consistentes com o design
-                h1.style.cssText = 'text-align:center; margin: 50px auto; background-color: var(--danger); color: white; border: 2px solid var(--border); padding: 10px; display: block;';
-                document.body.appendChild(h1);
-            }
-        }
-        
         // --- 1. VARIÁVEIS GLOBAIS ---
         let totalMerch = 0, totalLab = 0;
         let cfopChart, merchHistoryChartInstance, labHistoryChartInstance;
@@ -169,14 +140,18 @@
         const msg = t => document.getElementById('messages').textContent = t;
 
         // --- 3. DEFINIÇÃO DE FUNÇÕES ---
+        
         function getHistory() { const historyJSON = localStorage.getItem('nfeHistory'); return historyJSON ? JSON.parse(historyJSON) : []; }
         function saveHistory(data) { data.sort((a, b) => a.month.localeCompare(b.month)); localStorage.setItem('nfeHistory', JSON.stringify(data)); }
+
         function renderHistoryTab() { const history = getHistory(); const tbody = document.querySelector('#history-table tbody'); tbody.innerHTML = ''; if (history.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Nenhum dado no histórico.</td></tr>'; document.getElementById('history-total-merch').textContent = 'R$ 0,00'; document.getElementById('history-total-lab').textContent = 'R$ 0,00'; if (merchHistoryChartInstance) merchHistoryChartInstance.destroy(); if (labHistoryChartInstance) labHistoryChartInstance.destroy(); return; } let consolidatedMerch = 0, consolidatedLab = 0; history.forEach((entry, index) => { const tr = document.createElement('tr'); consolidatedMerch += entry.mercadoria; consolidatedLab += entry.maoDeObra; let merchGrowthCell = '—'; let labGrowthCell = '—'; if (index > 0) { const prevEntry = history[index - 1]; if (prevEntry.mercadoria > 0) { const variacao = ((entry.mercadoria - prevEntry.mercadoria) / prevEntry.mercadoria) * 100; const cor = variacao >= 0 ? 'green' : 'red'; merchGrowthCell = `<span style="color:${cor}">${variacao.toFixed(2).replace('.',',')}%</span>`; } if (prevEntry.maoDeObra > 0) { const variacao = ((entry.maoDeObra - prevEntry.maoDeObra) / prevEntry.maoDeObra) * 100; const cor = variacao >= 0 ? 'green' : 'red'; labGrowthCell = `<span style="color:${cor}">${variacao.toFixed(2).replace('.',',')}%</span>`; } } tr.innerHTML = `<td>${entry.month.replace('-', '/')}</td><td class="valor">${entry.mercadoria.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td><td class="percent">${merchGrowthCell}</td><td class="valor">${entry.maoDeObra.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td><td class="percent">${labGrowthCell}</td>`; tbody.appendChild(tr); }); document.getElementById('history-total-merch').textContent = consolidatedMerch.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); document.getElementById('history-total-lab').textContent = consolidatedLab.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); renderMerchHistoryChart(history); renderLabHistoryChart(history); }
         function renderMerchHistoryChart(history) { const ctx = document.getElementById('history-chart-merch').getContext('2d'); if (merchHistoryChartInstance) merchHistoryChartInstance.destroy(); const isDark = document.body.classList.contains('dark-theme'); const accent1 = isDark ? '#00ff00' : '#ffff00'; const textColor = isDark ? '#f5f5f5' : '#0a0a0a'; merchHistoryChartInstance = new Chart(ctx, { type: 'line', data: { labels: history.map(e => e.month.replace('-', '/')), datasets: [{ label: 'Mercadoria (R$)', data: history.map(e => e.mercadoria), borderColor: accent1, backgroundColor: accent1 + '33', tension: 0.1, fill: true }] }, options: { scales: { y: { ticks: { color: textColor } }, x: { ticks: { color: textColor } } }, plugins: { legend: { labels: { color: textColor } } } } }); }
         function renderLabHistoryChart(history) { const ctx = document.getElementById('history-chart-lab').getContext('2d'); if (labHistoryChartInstance) labHistoryChartInstance.destroy(); const isDark = document.body.classList.contains('dark-theme'); const accent2 = isDark ? '#ff00ff' : '#00ffff'; const textColor = isDark ? '#f5f5f5' : '#0a0a0a'; labHistoryChartInstance = new Chart(ctx, { type: 'line', data: { labels: history.map(e => e.month.replace('-', '/')), datasets: [{ label: 'Mão de Obra (R$)', data: history.map(e => e.maoDeObra), borderColor: accent2, backgroundColor: accent2 + '33', tension: 0.1, fill: true }] }, options: { scales: { y: { ticks: { color: textColor } }, x: { ticks: { color: textColor } } }, plugins: { legend: { labels: { color: textColor } } } } }); }
+        
         function processXML(xmlText) { const xml = new DOMParser().parseFromString(xmlText, "application/xml"); let nNF = xml.querySelector("nNF")?.textContent || "—"; const chave = xml.querySelector("chNFe")?.textContent || xml.querySelector("[Id^='NFe']")?.getAttribute("Id") || "—"; const cStat = xml.querySelector("cStat")?.textContent; const xMotivo = xml.querySelector("xMotivo")?.textContent?.toLowerCase() || ""; const cancelada = cStat === "101" || cStat === "135" || xMotivo.includes("cancel"); if (cancelada) nNF += " (CANCELADA)"; xml.querySelectorAll("det").forEach(det => { const cfop = det.querySelector("CFOP")?.textContent.trim(); const vProd = parseFloat(det.querySelector("vProd")?.textContent || "0"); if (cfop === "6902") { addRow("tbl-merch", nNF, chave, "6902", vProd); if (!cancelada) totalMerch += vProd; } if (cfop === "6124") { addRow("tbl-lab", nNF, chave, "6124", vProd); if (!cancelada) totalLab += vProd; } }); updateTotals(); return true; }
         function addRow(tableId, nNF, chave, cfop, valorFloat) { const tbody = document.querySelector(`#${tableId} tbody`); if (!tbody) { console.error(`Falha ao encontrar o tbody para a tabela #${tableId}`); return; } const valor = valorFloat.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); const tr = document.createElement("tr"); tr.innerHTML = `<td>${nNF}</td><td>${chave}</td><td>${cfop}</td><td class="valor">R$ ${valor}</td>`; tbody.appendChild(tr); }
         function updateTotals() { document.getElementById("total-merch").textContent = "R$ " + totalMerch.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); document.getElementById("total-lab").textContent = "R$ " + totalLab.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); cfopChart.data.datasets[0].data = [totalMerch, totalLab]; cfopChart.update(); }
+
         function applyTheme(theme) { const isDark = theme === 'dark'; document.body.classList.toggle('dark-theme', isDark); if (cfopChart) updateChartColors(); if (document.getElementById('tab-historico').classList.contains('active')) renderHistoryTab(); };
         function updateChartColors() { if (!cfopChart) return; const isDark = document.body.classList.contains('dark-theme'); const colors = isDark ? ['#00ff00', '#ff00ff'] : ['#ffff00', '#00ffff']; const borderColor = isDark ? '#f5f5f5' : '#0a0a0a'; const textColor = isDark ? '#f5f5f5' : '#0a0a0a'; cfopChart.data.datasets[0].backgroundColor = colors; cfopChart.data.datasets[0].borderColor = borderColor; cfopChart.options.plugins.legend.labels.color = textColor; cfopChart.update(); }
 
@@ -192,26 +167,15 @@
         
         // --- 5. FUNÇÃO DE INICIALIZAÇÃO ---
         function initializeApp() {
-            // A verificação de senha acontece ANTES de inicializar o app
-            checkPassword();
-        }
-
-        // --- 6. INÍCIO DA EXECUÇÃO ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // Executa a verificação de senha. A inicialização do app só ocorre
-            // se a senha estiver correta, dentro da própria função checkPassword.
-            checkPassword();
-        });
-
-        // O restante do código de inicialização do app foi movido para dentro
-        // da função checkPassword para garantir que só seja executado após a validação.
-        function startApp() {
             monthInput.value = new Date().toISOString().slice(0, 7);
             const cfopCtx = document.getElementById('cfopChart').getContext('2d');
             cfopChart = new Chart(cfopCtx, { type: 'pie', data: { labels: ['Mercadoria (6902)', 'Mão de Obra (6124)'], datasets: [{ data: [0, 0], borderWidth: 2 }] }, options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { font: { family: "'Roboto Mono', monospace", size: 14 } } } } }, plugins: [{ id: 'centerText', afterDraw(chart) { const {ctx, chartArea, width} = chart; const [merc, mao] = chart.data.datasets[0].data; if (!merc || isNaN(mao) || merc === 0) return; const percent = ((mao / merc) * 100).toFixed(2).replace('.', ',') + '%'; const label = `Mão de Obra: ${percent}`; ctx.save(); ctx.font = `bold ${Math.floor(width / 20)}px 'Roboto Mono'`; ctx.fillStyle = document.body.classList.contains('dark-theme') ? '#f5f5f5' : '#0a0a0a'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(label, (chartArea.left + chartArea.right) / 2, (chartArea.top + chartArea.bottom) / 2); ctx.restore(); } }] });
             const savedTheme = localStorage.getItem('theme') || 'light';
             applyTheme(savedTheme);
         }
+
+        // --- 6. INÍCIO DA EXECUÇÃO ---
+        document.addEventListener('DOMContentLoaded', initializeApp);
     </script>
 </body>
 </html>
